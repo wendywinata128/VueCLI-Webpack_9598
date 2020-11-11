@@ -1,6 +1,6 @@
 <template>
   <v-main class="list">
-    <h3 class="text-h3 font-weight-medium mb-5">To Do List</h3>
+    <h3 class="text-h3 font-weight-medium mb-5">To Do List UGD</h3>
     <v-card>
       <v-card-title>
         <v-text-field
@@ -13,10 +13,45 @@
         <v-spacer></v-spacer>
         <v-btn color="success" dark @click="dialog = true"> Tambah </v-btn>
       </v-card-title>
-      <v-data-table :headers="headers" :items="todos" hide-actions :search="search">
+      <v-data-table
+        :headers="headers"
+        :items="todos"
+        :search="search"
+        :single-expand="singleExpand"
+        :expanded.sync="expanded"
+        item-key="task"
+        show-expand
+        class="elevation-1"
+      >
+        <template v-slot:top>
+          <v-toolbar flat>
+            <v-toolbar-title>Expandable Table</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-select
+              v-model="sortBy"
+              flat
+              solo-inverted
+              hide-details
+              :items="['Penting', 'Tidak penting']"
+              prepend-inner-icon="mdi-magnify"
+              label="Sort by"
+              @change="setSortPenting"
+            ></v-select>
+          </v-toolbar>
+        </template>
+        <template v-slot:[`item.priority`]="{ item }">
+          <v-chip :color="getColor(item.priority)" label outlined>{{
+            item.priority
+          }}</v-chip>
+        </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn small class="mr-2" @click="editItem(item)"> edit </v-btn>
           <v-btn small @click="deleteItem(item)"> delete </v-btn>
+        </template>
+        <template v-slot:expanded-item="{ headers, item }">
+          <td :colspan="headers.length">
+            {{ item.note }}
+          </td>
         </template>
       </v-data-table>
     </v-card>
@@ -109,11 +144,16 @@ export default {
   name: "List",
   data() {
     return {
+      sortBy: null,
+      expanded: [],
+      singleExpand: false,
       search: null,
       dialog2: false,
       dialog3: false,
       dialog: false,
       oldIndex: 0,
+      sortKey: ["Penting", "Biasa", "Tidak penting"],
+      sortKey2: ["Tidak penting", "Biasa", "Penting"],
       headers: [
         {
           text: "Task",
@@ -122,7 +162,6 @@ export default {
           value: "task",
         },
         { text: "Priority", value: "priority" },
-        { text: "Note", value: "note" },
         { text: "Actions", value: "actions" },
       ],
       todos: [
@@ -143,6 +182,11 @@ export default {
         },
       ],
       formTodo: {
+        task: null,
+        priority: null,
+        note: null,
+      },
+      test: {
         task: null,
         priority: null,
         note: null,
@@ -192,6 +236,33 @@ export default {
       this.dialog2 = false;
       this.resetForm();
     },
+    getColor(priority) {
+      if (priority == "Penting") return "red";
+      else if (priority == "Tidak penting") return "green";
+      else return "blue";
+    },
+    // setSortPenting() {
+    //   for (var i = 0; i < this.todos.length; i++) {
+    //     for (var j = i + 1; i < this.todos.length; j++) {
+    //       if (
+    //         this.todos[i].priority == "Penting" &&
+    //         this.todos[j].priority == "Tidak penting"
+    //       ) {
+    //         this.test.task = this.todos[i].task;
+    //         this.test.priority = this.todos[i].priority;
+    //         this.test.note = this.todos[i].note;
+
+    //         this.todos[i].task = this.todos[j].task;
+    //         this.todos[i].priority = this.todos[j].priority;
+    //         this.todos[i].note = this.todos[j].note;
+
+    //         this.todos[j].task = this.test.task;
+    //         this.todos[j].priority = this.test.priority;
+    //         this.todos[j].note = this.test.note;
+    //       }
+    //     }
+    //   }
+    // },
   },
 };
 </script>
