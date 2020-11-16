@@ -35,7 +35,8 @@ export default {
       items: [
         { title: "Dashboard", to: "/" },
         { title: "GD", to: "/gd" },
-        { title: "Unguided", to : "/ugd"}
+        { title: "Unguided", to : "/ugd"},
+        { title: "Tugas", to : "/tugas"},
       ],
     };
   },
